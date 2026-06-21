@@ -15,12 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class InventoryService {
 
+
+
     private final InventoryItemRepository repository;
 
     public InventoryService(InventoryItemRepository repository) {
         this.repository = repository;
     }
 
+    //DTO Pattern
     public InventoryItemResponse createItem(CreateInventoryItemRequest request) {
         if (repository.existsBySku(request.sku())) {
             throw new InventoryOperationException("El SKU ya existe: " + request.sku());
@@ -62,12 +65,12 @@ public class InventoryService {
         );
     }
 
-    public InventoryItemResponse reserve(String sku, int quantity) {
+    public InventoryItemResponse reserve(String sku, int quantity) {  //contiene reglas de negocio.
         InventoryItem item = loadBySku(sku);
         if (quantity <= 0) {
             throw new InventoryOperationException("La cantidad debe ser mayor a 0.");
         }
-        if (item.getAvailableQuantity() < quantity) {
+        if (item.getAvailableQuantity() < quantity) {//y no están en el controller.
             throw new InventoryOperationException(
                     "Stock insuficiente para SKU " + sku + ". Disponible: " + item.getAvailableQuantity());
         }
@@ -113,6 +116,7 @@ public class InventoryService {
                 .orElseThrow(() -> new InventoryNotFoundException("No existe inventario para SKU: " + sku));
     }
 
+    //mapper
     private InventoryItemResponse toResponse(InventoryItem item) {
         return new InventoryItemResponse(
                 item.getSku(),
@@ -125,3 +129,7 @@ public class InventoryService {
         );
     }
 }
+
+
+
+

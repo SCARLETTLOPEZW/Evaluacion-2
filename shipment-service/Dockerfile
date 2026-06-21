@@ -1,10 +1,10 @@
-FROM eclipse-temurin:17-jdk AS build
+FROM eclipse-temurin:18-jdk AS build
 WORKDIR /workspace
 
 COPY . .
 RUN sed -i 's/\r$//' mvnw && chmod +x mvnw && ./mvnw -q -DskipTests -pl shipment-service -am package
 
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:18-jdk
 WORKDIR /app
 
 RUN apt-get update \
