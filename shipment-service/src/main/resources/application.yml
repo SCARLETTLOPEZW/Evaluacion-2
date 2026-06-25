@@ -4,27 +4,43 @@ server:
 spring:
   application:
     name: shipment-service
+
   datasource:
     url: jdbc:h2:mem:shipmentdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driverClassName: org.h2.Driver
     username: sa
     password:
+
   h2:
     console:
       enabled: true
       path: /h2-console
+
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://discovery-service:8761/eureka/
+
+shipment-service:
+  build:
+    context: .
+    dockerfile: shipment-service/Dockerfile
+  image: smartlogix/shipment-service:latest
+  depends_on:
+    discovery-service:
+      condition: service_healthy
+  restart: unless-stopped
+  environment:
+    - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+  ports:
+    - "8083:8083"
+rabbitmq:
+  host: smartlogix-rabbitmq
+  port: 5672
+  username: guest
+  password: guest

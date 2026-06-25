@@ -1,4 +1,9 @@
 package com.smartlogix.order.domain;
 
-public class OrderStatus {
+public enum OrderStatus {
+    CREATED,
+    PROCESSING,
+    SHIPPED,
+    DELIVERED,
+    CANCELLED
 }
